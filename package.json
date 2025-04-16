@@ -18,6 +18,7 @@
   "homepage": "https://github.com/Yoimiya428/tinyapp#readme",
   "description": "",
   "dependencies": {
+    "ejs": "^3.1.10",
     "express": "^5.1.0"
   }
 }
