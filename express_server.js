@@ -73,6 +73,15 @@ app.post("/urls", (req, res) => {
   //res.send("Ok"); // Respond with 'Ok' (we will replace this)
 });
 
+app.post("/urls/:id/delete", (req, res) => {
+  const id = req.params.id;
+
+  delete urlDatabase[id];
+
+  res.redirect("/urls");
+});
+
+
 
 
 //Actions
