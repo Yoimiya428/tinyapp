@@ -88,7 +88,7 @@ app.post('/urls/:id', (req, res) => {
   const updatedURL = req.body.longURL;
 
   if (urlDatabase[id]) {
-    urlDatabase[id].longURL = updatedURL;
+    urlDatabase[id].long = updatedURL;
   }
 
   res.redirect('/urls');
