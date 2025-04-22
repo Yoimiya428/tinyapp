@@ -85,12 +85,10 @@ app.post("/urls/:id/delete", (req, res) => {
 //edit
 app.post('/urls/:id', (req, res) => {
   const id = req.params.id;
-  const updatedURL = req.body.longURL;
+  const longURL = req.body.longURL;
 
-  if (urlDatabase[id]) {
-    urlDatabase[id].long = updatedURL;
-  }
-
+  urlDatabase[id] = longURL;
+  
   res.redirect('/urls');
 });
 
