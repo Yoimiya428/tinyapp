@@ -20,6 +20,27 @@
         <p class="card-text">
           Short URL ID: <a href="/u/<%= id %>"><%= id %></a>
         </p>
+
+
+        //Edit URL part
+        <main style="margin: 1em;">
+          <h2>Edit</h2>
+          <form class="form-inline" action="/urls" method="POST">
+            <div class="form-group mb-2">
+              <label for="longURL">New URL:</label>
+              <input
+                class="form-control"
+                type="text"
+                id ="longURL"
+                value="<%= urlDatabase[id]%>"
+                style="width: 300px; margin: 1em"
+              />
+              <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+          </form>
+        </main>
+
+
       </div>
       <div class="card-footer text-muted"></div>
     </div>
