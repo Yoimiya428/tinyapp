@@ -13,8 +13,14 @@ app.use(cookieParser());
 
 //DB configuration
 const urlDatabase = {
-  b2xVn2: "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW",
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW",
+  },
 };
 
 const users = {
@@ -45,6 +51,30 @@ const getUserByEmail = (email, users) => {
   return null;
 };
 
+const urlsForUser = (id) => {
+  const outcome = {};
+  for (const shortLink in urlDatabase) {
+    if (urlDatabase[shortLink].userID === id) {
+      outcome[shortLink] = urlDatabase[shortLink].longURL;
+    }
+  }
+  return outcome;
+};
+
+const checkPermission = (user, urlInfo, userID) => {
+  if (!user) {
+    return "please log in!";
+
+  }
+
+  if (!urlInfo) {
+    return "Short URL Ids do not exist";
+
+  }
+  if (userID !== urlInfo.userID) {
+    return "You can not edit/delete URLs not belonging to you!"
+  }
+};
 
 //GET
 app.get("/", (req, res) => {
@@ -59,19 +89,25 @@ app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
-// app.get("/set", (req, res) => {
-//   const a = 1;
-//   res.send(`a = ${a}`);
-// });
+app.get("/urls", (req, res) => {
+  //const templateVars = { urls: urlDatabase }; 
+  //res.render("urls_index", templateVars);
 
-// app.get("/fetch", (req, res) => {
-//   res.send(`a = ${a}`);
-// });
+  const userID = req.cookies["user_id"]
+  const user = users[userID];
 
-// app.get("/urls", (req, res) => {
-//   const templateVars = { urls: urlDatabase }; 
-//   res.render("urls_index", templateVars);
-// });
+  if (!user) {
+    return res.render("error", {user: user, error: "please log in."});
+  }
+
+  const userURLs = urlsForUser(userID);
+  const templateVars = {
+    user,
+    urls: userURLs,
+  };
+  res.render("urls_index", templateVars);
+
+});
 
 app.get("/urls/new", (req, res) => {
 
@@ -81,25 +117,40 @@ app.get("/urls/new", (req, res) => {
   if (!users[req.cookies["user_id"]]) {
     return res.redirect("/login");
   }
-  res.render("login", templateVars);
+  res.render("urls_new", templateVars);
 
 });
 
 app.get("/urls/:id", (req, res) => {
+
   const id = req.params.id;
-  const templateVars = { id: id, longURL: urlDatabase[id] };
+  const urlInfo = urlDatabase[id];
+  const userID = req.cookies["user_id"];
+  const user = users[userID];
+
+  const permissionError = checkPermission (user, urlInfo, userID)
+    if (permissionError) {
+      return res.render("error", {user: user, error: permissionError});
+    }
+  const templateVars = { id: id, longURL: urlDatabase[id].longURL, user: user};
+
+  
   res.render("urls_show", templateVars);
 });
 
 app.get("/u/:id", (req, res) => {
   const id = req.params.id;
-  const longURL = urlDatabase[id];
+  const urlInfo = urlDatabase[id];
 
-  if (!longURL) {
-    return res.status(404).send("Short URL Ids do not exist");
+  const uid = req.cookies["user_id"];
+  const user = users[uid];
+
+  if (!urlInfo) {
+    return res.render("error", {user: user, error: "Short URL Ids do not exist"});
+
   }
 
-  res.redirect(longURL);
+  res.redirect(urlInfo.longURL);
 });
 
 //pass in the username
@@ -147,7 +198,8 @@ app.post("/urls", (req, res) => {
   const user = users[userID];
 
   if (!user) {
-    return res.status(403).send("Only Registered Users Can Shorten URLs");
+
+    return res.render("error", {user: user, error: "Only Registered Users Can Shorten URLs"});
   }
 
   const longURL = req.body.longURL; 
@@ -156,13 +208,21 @@ app.post("/urls", (req, res) => {
   urlDatabase[id] = {longURL, userID};
 
   res.redirect(`/urls/${id}`);
-  //console.log(req.body); // Log the POST request body to the console
-  //res.send("Ok"); // Respond with 'Ok' (we will replace this)
+
 });
 
 //delete
 app.post("/urls/:id/delete", (req, res) => {
+
   const id = req.params.id;
+  const urlInfo = urlDatabase[id];
+  const userID = req.cookies["user_id"];
+  const user = users[userID];
+
+  const permissionError = checkPermission (user, urlInfo, userID)
+    if (permissionError) {
+      return res.render("error", {user: user, error: permissionError});
+    }
 
   delete urlDatabase[id];
 
@@ -171,10 +231,21 @@ app.post("/urls/:id/delete", (req, res) => {
 
 //edit
 app.post('/urls/:id', (req, res) => {
+
   const id = req.params.id;
+  const urlInfo = urlDatabase[id];
+  const userID = req.cookies["user_id"];
+  const user = users[userID];
+
+  const permissionError = checkPermission (user, urlInfo, userID)
+    if (permissionError) {
+      return res.render("error", {user: user, error: permissionError});
+    }
+
+
   const longURL = req.body.longURL;
 
-  urlDatabase[id] = longURL;
+  urlDatabase[id].longURL = longURL;
   
   res.redirect('/urls');
 });
@@ -188,17 +259,19 @@ app.post('/login', (req, res) => {
     return res.status(403).send("Password is incorrect.");
   }
 
-  if (user === null) {
+  if (!user) {
     return res.status(403).send("User not found.");
   }
 
-  res.cookie("user_id", uid); 
+  res.cookie("user_id", user.id); 
+
   res.redirect("/urls");         
 });
 
 //logout
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
+
   res.redirect("/urls");
 });
 
@@ -214,16 +287,17 @@ app.post("/register", (req, res) => {
     return res.status(400).send("email already registered.");
   }
 
-  const uid = generateRandomString();
+  const userID = generateRandomString();
   const newUser = {
-    id: uid,
+    id: userID,
     email,
     password
   };
 
-  users[uid] = newUser;
+  users[userID] = newUser;
   console.log("New user:", users);
-  res.cookie("user_id", uid); 
+  res.cookie("user_id", userID); 
+
   res.redirect("/urls");        
 });
 
