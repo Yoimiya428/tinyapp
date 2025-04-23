@@ -36,6 +36,15 @@ function generateRandomString() {
   return Math.random().toString(36).slice(2,8);
 }
 
+const getUserByEmail = (email, users) => {
+  for (const id in users) {
+    if (users[id].email === email) {
+      return users[id];
+    }
+  }
+  return null;
+};
+
 
 //GET
 app.get("/", (req, res) => {
@@ -146,6 +155,14 @@ app.post("/logout", (req, res) => {
 app.post("/register", (req, res) => {
   const { email, password } = req.body;
 
+  if (email === '' || password === '') {
+    return res.status(400).send("Email/password is empty, please try again.");
+  }
+
+  if (getUserByEmail(email, users)) {
+    return res.status(400).send("email already registered.");
+  }
+
   const uid = generateRandomString();
   const newUser = {
     id: uid,
@@ -154,6 +171,7 @@ app.post("/register", (req, res) => {
   };
 
   users[uid] = newUser;
+  console.log("New user:", users);
   res.cookie("user_id", uid); // Set user_id cookie
   res.redirect("/urls");         // Redirect to /urls
 });
