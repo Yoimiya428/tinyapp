@@ -44,10 +44,11 @@ app.get("/hello", (req, res) => {
 // app.get("/fetch", (req, res) => {
 //   res.send(`a = ${a}`);
 // });
-app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase }; 
-  res.render("urls_index", templateVars);
-});
+
+// app.get("/urls", (req, res) => {
+//   const templateVars = { urls: urlDatabase }; 
+//   res.render("urls_index", templateVars);
+// });
 
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
@@ -67,14 +68,13 @@ app.get("/u/:id", (req, res) => {
 
 //pass in the username
 app.get("/urls", (req, res) => {
+  const username = req.cookies["username"];
   const templateVars = {
-    username: req.cookies["username"],
-    userdb: urlDatabase
+    username,
+    urls: urlDatabase,
   };
   res.render("urls_index", templateVars);
 });
-
-
 
 //POST
 app.post("/urls", (req, res) => {
@@ -113,6 +113,12 @@ app.post('/login', (req, res) => {
 
   res.cookie('username', username);
   res.redirect('/urls');
+});
+
+//logout
+app.post("/logout", (req, res) => {
+  res.clearCookie("username");
+  res.redirect("/urls");
 });
 
 

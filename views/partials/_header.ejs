@@ -21,18 +21,26 @@
 
     <div>
 
-        <form class="form-inline" action="/login" method="POST">
-          <div class="form-group mb-2">
-            <input
-              class="form-control"
-              type="text"
-              name="username"
-              placeholder="Username"
-              style="width: 300px; margin: 1em"
-            />
-            <button type="submit" class="btn btn-primary">Login</button>
-          </div>
-        </form>
+        <% if (urls) { %>
+          <label>Logged in as: <%= urls %></label>
+          <form class="form-inline" method="POST" action="/logout" >
+            <button type="submit" class="btn btn-primary">Logout</button>
+              
+          </form>
+        <% } else { %>
+          <form class="form-inline" action="/login" method="POST">
+            <div class="form-group mb-2">
+              <input
+                class="form-control"
+                type="text"
+                name="urls"
+                placeholder="Username"
+                style="width: 300px; margin-right: 1em;"
+              />
+              <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+          </form>
+        <% } %>
     
     </div>
       
