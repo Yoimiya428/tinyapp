@@ -21,8 +21,8 @@
 
     <div>
 
-        <% if (urls) { %>
-          <label>Logged in as: <%= urls %></label>
+        <% if (username) { %>
+          <label>Logged in as: <%= username %></label>
           <form class="form-inline" method="POST" action="/logout" >
             <button type="submit" class="btn btn-primary">Logout</button>
               
@@ -33,7 +33,7 @@
               <input
                 class="form-control"
                 type="text"
-                name="urls"
+                name="username"
                 placeholder="Username"
                 style="width: 300px; margin-right: 1em;"
               />
