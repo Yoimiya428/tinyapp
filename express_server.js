@@ -150,15 +150,24 @@ app.post('/urls/:id', (req, res) => {
 
 //cookies
 app.post('/login', (req, res) => {
-  const username = req.body.username;
+  const { email, password } = req.body;
+  const user = getUserByEmail(email, users);
 
-  res.cookie('username', username);
-  res.redirect('/urls');
+  if (user.password !== password) {
+    return res.status(403).send("Password is incorrect.");
+  }
+
+  if (user === null) {
+    return res.status(403).send("User not found.");
+  }
+
+  res.cookie("user_id", uid); 
+  res.redirect("/urls");         
 });
 
 //logout
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
@@ -183,8 +192,8 @@ app.post("/register", (req, res) => {
 
   users[uid] = newUser;
   console.log("New user:", users);
-  res.cookie("user_id", uid); // Set user_id cookie
-  res.redirect("/urls");         // Redirect to /urls
+  res.cookie("user_id", uid); 
+  res.redirect("/urls");        
 });
 
 //Actions
