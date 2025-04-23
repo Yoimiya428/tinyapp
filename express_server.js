@@ -74,7 +74,15 @@ app.get("/hello", (req, res) => {
 // });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+
+  const templateVars = {
+    user: users[req.cookies["user_id"]],
+  };
+  if (!users[req.cookies["user_id"]]) {
+    return res.redirect("/login");
+  }
+  res.render("login", templateVars);
+
 });
 
 app.get("/urls/:id", (req, res) => {
@@ -86,6 +94,11 @@ app.get("/urls/:id", (req, res) => {
 app.get("/u/:id", (req, res) => {
   const id = req.params.id;
   const longURL = urlDatabase[id];
+
+  if (!longURL) {
+    return res.status(404).send("Short URL Ids do not exist");
+  }
+
   res.redirect(longURL);
 });
 
@@ -103,14 +116,24 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  res.render("register");
+  const templateVars = {
+    user: users[req.cookies["user_id"]],
+  };
+  if (users[req.cookies["user_id"]]) {
+    return res.redirect("/urls");
+  }
+  res.render("register", templateVars);
 });
 
 app.get("/login", (req, res) => {
   const templateVars = {
     user: users[req.cookies["user_id"]],
   };
+  if (users[req.cookies["user_id"]]) {
+    return res.redirect("/urls");
+  }
   res.render("login", templateVars);
+
 });
 
 
@@ -119,10 +142,18 @@ app.get("/login", (req, res) => {
 
 //POST
 app.post("/urls", (req, res) => {
+
+  const userID = req.cookies["user_id"];
+  const user = users[userID];
+
+  if (!user) {
+    return res.status(403).send("Only Registered Users Can Shorten URLs");
+  }
+
   const longURL = req.body.longURL; 
   const id = generateRandomString();
 
-  urlDatabase[id] = longURL;
+  urlDatabase[id] = {longURL, userID};
 
   res.redirect(`/urls/${id}`);
   //console.log(req.body); // Log the POST request body to the console
