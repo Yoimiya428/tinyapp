@@ -106,6 +106,17 @@ app.get("/register", (req, res) => {
   res.render("register");
 });
 
+app.get("/login", (req, res) => {
+  const templateVars = {
+    user: users[req.cookies["user_id"]],
+  };
+  res.render("login", templateVars);
+});
+
+
+
+
+
 //POST
 app.post("/urls", (req, res) => {
   const longURL = req.body.longURL; 
