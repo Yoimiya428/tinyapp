@@ -10,10 +10,24 @@ const PORT = 8080; // default port 8080
 app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 app.use(cookieParser());
+
 //DB configuration
 const urlDatabase = {
   b2xVn2: "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com",
+};
+
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur",
+  },
+  user2RandomID: {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk",
+  },
 };
 
 
@@ -68,8 +82,12 @@ app.get("/u/:id", (req, res) => {
 
 //pass in the username
 app.get("/urls", (req, res) => {
+
+  const uid = req.cookies["user_id"];
+  const user = users[uid];
+
   const templateVars = {
-    username: req.cookies["username"],
+    user,
     urls: urlDatabase,
   };
   res.render("urls_index", templateVars);
@@ -124,7 +142,21 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
+//register
+app.post("/register", (req, res) => {
+  const { email, password } = req.body;
 
+  const uid = generateRandomString();
+  const newUser = {
+    id: uid,
+    email,
+    password
+  };
+
+  users[uid] = newUser;
+  res.cookie("user_id", uid); // Set user_id cookie
+  res.redirect("/urls");         // Redirect to /urls
+});
 
 //Actions
 app.listen(PORT, () => {
