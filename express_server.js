@@ -69,7 +69,7 @@ app.get("/u/:id", (req, res) => {
 app.get("/urls", (req, res) => {
   const templateVars = {
     username: req.cookies["username"],
-    uid: uidDB[username]
+    userdb: urlDatabase
   };
   res.render("urls_index", templateVars);
 });
