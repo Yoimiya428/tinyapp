@@ -75,6 +75,10 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+app.get("/register", (req, res) => {
+  res.render("register");
+});
+
 //POST
 app.post("/urls", (req, res) => {
   const longURL = req.body.longURL; 
