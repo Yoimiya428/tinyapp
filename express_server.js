@@ -4,6 +4,8 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const cookieSession = require('cookie-session')
 
+const { getUserByEmail } = require('./helpers');
+
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -52,14 +54,28 @@ function generateRandomString() {
   return Math.random().toString(36).slice(2,8);
 }
 
-const getUserByEmail = (email, users) => {
-  for (const id in users) {
-    if (users[id].email === email) {
-      return users[id];
-    }
-  }
-  return null;
-};
+// const getUserByEmail = (email, users) => {
+//   for (const id in users) {
+//     if (users[id].email === email) {
+//       return users[id];
+//     }
+//   }
+//   return null;
+// };
+
+// const getUserByEmail = (email, database) => {
+//   for (const id in database) {
+
+//     const user = database[id];
+
+//     if (user.email === email) {
+//       return user;
+//     }
+//   }
+
+// };
+
+// module.exports = { getUserByEmail };
 
 const urlsForUser = (id) => {
   const outcome = {};
