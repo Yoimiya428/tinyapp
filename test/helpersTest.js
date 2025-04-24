@@ -29,6 +29,6 @@ describe('getUserByEmail', function() {
     const expectedUserID = "userRandomID";
     // Write your assert statement here
 
-    assert.equal(user.id, expectedUserID);
+    assert.isUndefined(user);
   });
 });

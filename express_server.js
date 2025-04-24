@@ -2,7 +2,7 @@
 const express = require("express");
 
 const bcrypt = require("bcryptjs");
-const cookieSession = require('cookie-session')
+const cookieSession = require('cookie-session');
 
 const { getUserByEmail } = require('./helpers');
 
@@ -21,7 +21,7 @@ app.use(cookieSession({
 
   // Cookie Options
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
-}))
+}));
 
 //DB configuration
 const urlDatabase = {
@@ -52,30 +52,9 @@ const users = {
 //Function Area
 function generateRandomString() {
   return Math.random().toString(36).slice(2,8);
-}
+};
 
-// const getUserByEmail = (email, users) => {
-//   for (const id in users) {
-//     if (users[id].email === email) {
-//       return users[id];
-//     }
-//   }
-//   return null;
-// };
 
-// const getUserByEmail = (email, database) => {
-//   for (const id in database) {
-
-//     const user = database[id];
-
-//     if (user.email === email) {
-//       return user;
-//     }
-//   }
-
-// };
-
-// module.exports = { getUserByEmail };
 
 const urlsForUser = (id) => {
   const outcome = {};
@@ -98,7 +77,7 @@ const checkPermission = (user, urlInfo, userID) => {
 
   }
   if (userID !== urlInfo.userID) {
-    return "You can not edit/delete URLs not belonging to you!"
+    return "You can not edit/delete URLs not belonging to you!";
   }
 };
 
@@ -116,15 +95,14 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  //const templateVars = { urls: urlDatabase }; 
-  //res.render("urls_index", templateVars);
 
-  const userID = req.session.user_id
+
+  const userID = req.session.user_id;
   const user = users[userID];
 
   if (!user) {
     return res.render("error", {user: user, error: "please log in."});
-  }
+  };
 
   const userURLs = urlsForUser(userID);
   const templateVars = {
@@ -154,7 +132,7 @@ app.get("/urls/:id", (req, res) => {
   const userID = req.session.user_id;
   const user = users[userID];
 
-  const permissionError = checkPermission (user, urlInfo, userID)
+  const permissionError = checkPermission (user, urlInfo, userID);
     if (permissionError) {
       return res.render("error", {user: user, error: permissionError});
     }

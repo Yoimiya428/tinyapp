@@ -7,7 +7,7 @@ const getUserByEmail = (email, database) => {
       return user;
     }
   }
-
+  return null;
 };
 
 module.exports = { getUserByEmail };
