@@ -22,7 +22,13 @@ describe('getUserByEmail', function() {
     // Write your assert statement here
 
     assert.equal(user.id, expectedUserID);
+  });
 
+  it('should return undefined', function() {
+    const user = getUserByEmail("user23@example.com", testUsers)
+    const expectedUserID = "userRandomID";
+    // Write your assert statement here
 
+    assert.equal(user.id, expectedUserID);
   });
 });
